@@ -3,17 +3,32 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { ref} from "vue";
+import { marked } from 'marked';
 
 // Fetch your API_KEY
 const API_KEY = "AIzaSyDMd_M7ZrjIL6TqiJwPh8SFYEm6YEid9RU";
 // const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+let prompt = ref('');
 
-const prompt = "écrit une histoire sur le codage";
+let result = ref('');
+async function getResult() {
+   model.generateContent(prompt.value).then(
+    (r) => {
+      result.value=marked(r.response.candidates[0].content.parts[0].text) ;
+      console.log(result.value);
+      
+    },
+    (error) => {
+      console.log(error);
+    }
+   );
 
-const result = await model.generateContent(prompt);
-console.log(result.response.text());
+  
+}
+// console.log(result.response.text());
 </script>
 
 <template>
@@ -26,8 +41,10 @@ console.log(result.response.text());
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <input type="text" v-model="prompt">
+        <button @click="getResult()">soumettre</button>
+        <p v-html="result"></p>
       </nav>
-      {{ result }}
     </div>
   </header>
 
@@ -35,6 +52,9 @@ console.log(result.response.text());
 </template>
 
 <style scoped>
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 header {
   line-height: 1.5;
   max-height: 100vh;
