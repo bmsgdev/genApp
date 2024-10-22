@@ -1,6 +1,19 @@
+
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Fetch your API_KEY
+const API_KEY = "AIzaSyDMd_M7ZrjIL6TqiJwPh8SFYEm6YEid9RU";
+// const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+const prompt = "écrit une histoire sur le codage";
+
+const result = await model.generateContent(prompt);
+console.log(result.response.text());
 </script>
 
 <template>
@@ -14,6 +27,7 @@ import HelloWorld from './components/HelloWorld.vue'
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
+      {{ result }}
     </div>
   </header>
 
